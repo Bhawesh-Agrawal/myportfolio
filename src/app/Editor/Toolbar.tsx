@@ -24,7 +24,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
             editor
                 ?.chain()
                 .focus()
-                .setEmbed({ src: url, frameborder: '0', allowfullscreen: true, width: '100%', height: '400px' })
+                // @ts-ignore
+                .setEmbed({ src: url, frameborder: '0', allowfullscreen: true, width: '100%', height: '400px' } as any)
                 .run();
         }
     };
@@ -41,6 +42,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
                 onChange={(e) => {
                     const level = parseInt(e.target.value);
                     if (level) {
+                        // @ts-ignore
                         editor.chain().focus().toggleHeading({ level }).run();
                     } else {
                         editor.chain().focus().setParagraph().run();

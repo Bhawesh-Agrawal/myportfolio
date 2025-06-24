@@ -1,10 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { CldUploadWidget } from 'next-cloudinary';
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
 import Editor from '@/app/Editor/Editor';
 import { useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+
+interface Reference {
+    label: string;
+    url: string;
+}
+
+interface ProjectLinks {
+    website: string | null;
+    github: string | null;
+    references: Reference[];
+}
 
 interface PostData {
     id: string;
@@ -17,12 +29,8 @@ interface PostData {
     updatedAt: string;
     published: boolean;
     tags: string[];
-    projectLinks: {
-        website: string | null;
-        github: string | null;
-        references: { label: string; url: string }[];
-    } | null;
-    _id?: string; // Optional internal fields from Convex
+    projectLinks: ProjectLinks | null;
+    _id?: string;
     _creationTime?: number;
 }
 
@@ -43,14 +51,15 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
         }
     );
 
-    const [reference, setReference] = useState<{ label: string; url: string }>({ label: '', url: '' });
+    const [reference, setReference] = useState<Reference>({ label: '', url: '' });
+
     const createPost = useMutation(api.createPost.createPost);
     const updatePost = useMutation(api.createPost.updatePost);
 
     const addReference = () => {
         if (reference.label && reference.url) {
             setPostData((prev) => {
-                const projectLinks = prev.projectLinks ?? { website: null, github: null, references: [] };
+                const projectLinks: ProjectLinks = prev.projectLinks ?? { website: null, github: null, references: [] };
                 return {
                     ...prev,
                     projectLinks: {
@@ -81,13 +90,21 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
     };
 
     const handleSubmit = async (isDraft: boolean) => {
-        // Remove internal Convex fields and the id field (Convex uses _id instead)
-        const { _creationTime, _id, id, ...rest } = postData;
+        const { _creationTime, _id, ...rest } = postData;
 
-        const projectLinks = rest.projectLinks === null ? undefined : rest.projectLinks;
+        const projectLinks = rest.projectLinks
+            ? {
+                website: rest.projectLinks.website === null ? undefined : rest.projectLinks.website,
+                github: rest.projectLinks.github === null ? undefined : rest.projectLinks.github,
+                references: rest.projectLinks.references,
+            }
+            : undefined;
+
+        const bannerImage = rest.bannerImage === null ? undefined : rest.bannerImage;
 
         const data = {
             ...rest,
+            bannerImage,
             projectLinks,
             published: isDraft ? false : true,
             updatedAt: new Date().toISOString(),
@@ -95,10 +112,12 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
 
         try {
             if (initialData) {
-                await updatePost(data);
+                // Convex expects Id<"blog"> here
+                await updatePost({ ...data, id: _id as Id<"blog"> });
                 alert('Post updated successfully');
             } else {
-                await createPost(data);
+                const { id, ...createData } = data; // remove 'id' for createPost
+                await createPost(createData);
                 alert(isDraft ? 'Draft saved successfully' : 'Post published successfully');
                 if (!isDraft) resetForm();
             }
@@ -109,12 +128,11 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
     };
 
 
-
-
     return (
         <div className="max-w-4xl mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Create Post</h1>
             <div className="space-y-4">
+                {/* Type Selector */}
                 <div>
                     <label className="block text-sm font-medium">Type</label>
                     <select
@@ -133,6 +151,8 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                         <option value="project">Project</option>
                     </select>
                 </div>
+
+                {/* Title */}
                 <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input
@@ -142,6 +162,8 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                         className="border rounded p-2 w-full"
                     />
                 </div>
+
+                {/* Slug */}
                 <div>
                     <label className="block text-sm font-medium">Slug</label>
                     <input
@@ -151,6 +173,8 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                         className="border rounded p-2 w-full"
                     />
                 </div>
+
+                {/* Tags */}
                 <div>
                     <label className="block text-sm font-medium">Tags (comma-separated)</label>
                     <input
@@ -162,15 +186,19 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                         className="border rounded p-2 w-full"
                     />
                 </div>
+
+                {/* Banner Image */}
                 <div>
                     <label className="block text-sm font-medium">Banner Image</label>
                     <CldUploadWidget
                         uploadPreset="portfolio-blog"
-                        onSuccess={(result: any) => {
-                            if (result?.info?.secure_url) {
-                                setPostData({ ...postData, bannerImage: result.info.secure_url });
+                        onSuccess={(result) => {
+                            if (typeof result === 'object' && result !== null && 'secure_url' in result) {
+                                const uploadResult = result as CloudinaryUploadWidgetInfo;
+                                setPostData({ ...postData, bannerImage: uploadResult.secure_url });
                             }
                         }}
+
                         onError={(error: any) => console.error('Upload failed:', error)}
                     >
                         {({ open }) => (
@@ -181,6 +209,8 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                     </CldUploadWidget>
                     {postData.bannerImage && <img src={postData.bannerImage} alt="Banner" className="mt-2 max-w-xs" />}
                 </div>
+
+                {/* Project Fields */}
                 {postData.type === 'project' && (
                     <div className="space-y-4">
                         <div>
@@ -258,10 +288,14 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                         </div>
                     </div>
                 )}
+
+                {/* Content Editor */}
                 <div>
                     <label className="block text-sm font-medium">Content</label>
                     <Editor content={postData.content} onChange={(content) => setPostData({ ...postData, content })} />
                 </div>
+
+                {/* Buttons */}
                 <div className="flex gap-4">
                     <button
                         onClick={() => handleSubmit(true)}

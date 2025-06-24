@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
@@ -26,13 +26,13 @@ const Embed = Extension.create({
     addAttributes() {
         return {
             src: {
-                default: null,
+                default: null as string | null,
             },
             frameborder: {
                 default: '0',
             },
             allowfullscreen: {
-                default: this.options.allowFullscreen,
+                default: this.options.allowFullscreen as boolean,
             },
             width: {
                 default: '100%',
@@ -49,14 +49,15 @@ const Embed = Extension.create({
             },
         ];
     },
-    renderHTML({ HTMLAttributes }) {
+    renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {
         return ['iframe', HTMLAttributes];
     },
+    // @ts-ignore
     addCommands() {
         return {
             setEmbed:
-                (options) =>
-                    ({ commands }) => {
+                (options: Record<string, any>) =>
+                    ({ commands }: { commands: any }) => {
                         return commands.insertContent({
                             type: this.name,
                             attrs: options,
