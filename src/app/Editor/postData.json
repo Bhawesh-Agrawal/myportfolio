@@ -1,0 +1,20 @@
+{
+  "id": "string",
+  "type": "blog" | "project",
+  "title": "string",
+  "slug": "string",
+  "bannerImage": "string | null",
+  "content": "string",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "published": "boolean",
+  "tags": "string[]",
+  "projectLinks": {
+    "website": "string | null",
+    "github": "string | null",
+    "references": {
+      "label": "string",
+      "url": "string"
+    }[]
+} | null
+}
