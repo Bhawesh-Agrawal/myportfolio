@@ -2,8 +2,6 @@
 
 import Navbar from "@/Components/Navbar/page";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useEditorContext } from "@/app/Editor/EditorContext";
-import { getTools } from "@/app/Editor/tools";
 import { Upload, Save, AlertCircle, CheckCircle, Clock } from "lucide-react";
 
 // Dynamic import types
