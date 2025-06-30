@@ -193,11 +193,12 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
                     <CldUploadWidget
                         uploadPreset="portfolio-blog"
                         onSuccess={(result) => {
-                            if (typeof result === 'object' && result !== null && 'secure_url' in result) {
-                                const uploadResult = result as CloudinaryUploadWidgetInfo;
-                                setPostData({ ...postData, bannerImage: uploadResult.secure_url });
+                            const info = (result as any).info;
+                            if (info?.secure_url) {
+                                setPostData((prev) => ({ ...prev, bannerImage: info.secure_url }));
                             }
                         }}
+
 
                         onError={(error: any) => console.error('Upload failed:', error)}
                     >
