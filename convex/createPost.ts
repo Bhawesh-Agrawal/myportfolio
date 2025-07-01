@@ -31,8 +31,8 @@ export const createPost = mutation({
         const { title, slug, tags, projectLinks } = args;
 
         if (title.trim() === "") throw new Error("Title cannot be empty.");
-        if (slug.trim() === "" || slug.includes(" ")) {
-            throw new Error("Slug must be non-empty and URL-safe.");
+        if (slug.trim() === "") {
+            throw new Error("Description cannot be empty.");
         }
 
         if (tags.length > 10) throw new Error("Too many tags. Max is 10.");

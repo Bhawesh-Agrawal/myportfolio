@@ -102,7 +102,8 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
 
         const bannerImage = rest.bannerImage === null ? undefined : rest.bannerImage;
 
-        const data = {
+        // Build base data with all fields including createdAt
+        const baseData = {
             ...rest,
             bannerImage,
             projectLinks,
@@ -112,11 +113,14 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
 
         try {
             if (initialData) {
-                // Convex expects Id<"blog"> here
-                await updatePost({ ...data, id: _id as Id<"blog"> });
+                // For update, remove createdAt to avoid validation error
+                const { createdAt, ...updateData } = baseData;
+
+                await updatePost({ ...updateData, id: _id as Id<"blog"> });
                 alert('Post updated successfully');
             } else {
-                const { id, ...createData } = data; // remove 'id' for createPost
+                // For create, pass all data including createdAt
+                const { id, ...createData } = baseData;
                 await createPost(createData);
                 alert(isDraft ? 'Draft saved successfully' : 'Post published successfully');
                 if (!isDraft) resetForm();
@@ -126,6 +130,7 @@ const PostEditor: React.FC<{ initialData?: PostData }> = ({ initialData }) => {
             alert(`Error: ${err.message}`);
         }
     };
+
 
 
     return (
