@@ -38,7 +38,7 @@ const AnimatedLine = () => {
     return (
         <svg
             viewBox="0 0 1561 2339"
-            className="w-full h-[200vh] absolute top-15 left-0"
+            className="hidden md:block w-full h-[200vh] absolute top-15 left-0"
             preserveAspectRatio="xMidYMin meet"
             xmlns="http://www.w3.org/2000/svg"
         >

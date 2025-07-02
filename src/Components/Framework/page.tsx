@@ -19,6 +19,7 @@ const LOGOS = [
     './framework/sql.svg',
     './framework/scikit-learn.png',
 ];
+
 function splitArray<T>(array: Array<T>, numParts: number) {
     const result: Array<Array<T>> = []
 
@@ -65,14 +66,14 @@ function ReviewRow({
     return (
         <div
             ref={rowRef}
-            className={cn('flex animate-marquee-horizontal gap-8 py-4', className)}
+            className={cn('flex animate-marquee-horizontal gap-4 sm:gap-6 md:gap-8 py-2 sm:py-3 md:py-4', className)}
             style={{ '--marquee-duration': duration } as React.CSSProperties}
         >
             {logos.concat(logos).map((imgSrc, index) => (
                 <div
                     key={index}
                     className={cn(
-                        'animate-fade-in opacity-0 w-24 h-24 flex-shrink-0',
+                        'animate-fade-in opacity-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex-shrink-0',
                         logoClassName?.(index % logos.length)
                     )}
                     style={{
@@ -94,7 +95,7 @@ function ReviewGrid() {
     return (
         <div
             ref={containerRef}
-            className="relative space-y-6 overflow-hidden h-[18rem] max-w-full mx-auto"
+            className="relative space-y-3 sm:space-y-4 md:space-y-6 overflow-hidden h-[12rem] sm:h-[14rem] md:h-[16rem] lg:h-[18rem] max-w-full mx-auto"
         >
             {isInView && (
                 <>
@@ -106,9 +107,9 @@ function ReviewGrid() {
     )
 }
 
-const Framework = ()=>{
+const Framework = () => {
     return (
-        <div className="relative max-w-6xl mx-auto px-4">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 sm:mt-24 md:mt-16 lg:mt-0">
             <ReviewGrid />
         </div>
     )

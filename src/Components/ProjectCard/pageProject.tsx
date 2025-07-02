@@ -50,7 +50,7 @@ const LandingProjectsSlider = () => {
 
     return (
         <section ref={sliderRef} className="w-full flex flex-col py-12">
-            <p className="mt-3 mb-10 ml-5 font-bold text-8xl">Projects</p>
+            <p className="mt-3 mb-10 font-bold text-6xl md:text-8xl md:text-left text-center md:ml-5 ml-0 px-4 md:px-0 text-[#6096B4]">Projects</p>
             {topProjects.map((post, index) => (
                 <div
                     key={post._id}
@@ -59,8 +59,8 @@ const LandingProjectsSlider = () => {
                     }}
                     className={`relative ${
                         index % 2 === 0
-                            ? "self-start w-[60vw] ml-0"
-                            : "self-end w-[60vw] mr-0"
+                            ? "md:self-start self-center md:w-[60vw] w-[90vw] md:ml-0 ml-0"
+                            : "md:self-end self-center md:w-[60vw] w-[90vw] md:mr-0 mr-0"
                     } mb-12`}
                     style={{ willChange: "transform, opacity" }}
                 >
