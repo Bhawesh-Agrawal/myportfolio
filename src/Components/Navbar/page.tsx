@@ -27,7 +27,7 @@ const Navbar = () => {
             <Link href="/Project" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
               Projects
             </Link>
-            <Link href="#timeline" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
+            <Link href="/Blog" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
               Blog
             </Link>
             <Link href="#workflow" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
