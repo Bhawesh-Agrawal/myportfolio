@@ -30,10 +30,10 @@ const Navbar = () => {
             <Link href="/Blog" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
               Blog
             </Link>
-            <Link href="#workflow" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
+            <Link href="/Tweets" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
               Tweets
             </Link>
-            <Link href="/contact" className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors duration-200">
+            <Link href="/Contact" className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors duration-200">
               Contact Me
             </Link>
           </div>
@@ -84,7 +84,7 @@ const Navbar = () => {
               Projects
             </Link>
             <Link
-                href="#timeline"
+                href="/Blog"
                 scroll={false}
                 className="block text-gray-700 hover:text-amber-600 transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -92,7 +92,7 @@ const Navbar = () => {
               Blog
             </Link>
             <Link
-                href="#workflow"
+                href="/Tweets"
                 scroll={false}
                 className="block text-gray-700 hover:text-amber-600 transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -100,7 +100,7 @@ const Navbar = () => {
               Tweets
             </Link>
             <Link
-                href="/contact"
+                href="/Contact"
                 className="block bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors duration-200 text-center w-fit"
                 onClick={() => setIsMobileMenuOpen(false)}
             >

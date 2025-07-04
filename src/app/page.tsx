@@ -5,6 +5,7 @@ import TimelineStudy from "@/Components/TimelineStudy/page";
 import Framework from "@/Components/Framework/page";
 import AnimatedLine from "@/Components/Workflow/Workflow";
 import LandingProjectsSlider from "@/Components/ProjectCard/pageProject";
+import AchievementsSection from "@/Components/Achievements/Achievements";
 
 const page = ()=>{
     return(
@@ -27,6 +28,9 @@ const page = ()=>{
             </div>
             <div>
                 <LandingProjectsSlider />
+            </div>
+            <div>
+                <AchievementsSection />
             </div>
         </div>
     )
