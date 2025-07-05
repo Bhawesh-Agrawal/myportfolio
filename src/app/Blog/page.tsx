@@ -1,5 +1,4 @@
 "use client"
-import Navbar from "@/Components/Navbar/page";
 import {usePosts} from "@/Components/StoreContext/postContext";
 import {useEffect, useState} from "react";
 import {FaChevronDown, FaFilter, FaRocket, FaSearch, FaTimes, FaCalendarAlt, FaClock, FaArrowRight, FaTag} from "react-icons/fa";
@@ -91,7 +90,6 @@ export default function Blog(){
     if (isLoading && posts.length === 0) {
         return (
             <>
-                <Navbar />
                 <div className="min-h-screen bg-gray-50 flex justify-center items-center">
                     <div className="text-center">
                         <div className="relative w-16 h-16 mx-auto mb-4">
@@ -111,7 +109,6 @@ export default function Blog(){
     if (blogs.length === 0 && initialLoadComplete) {
         return (
             <>
-                <Navbar />
                 <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                     <div className="text-center p-8">
                         <div className="w-20 h-20 bg-blue-100 rounded-full flex justify-center items-center mx-auto mb-6">
@@ -133,7 +130,6 @@ export default function Blog(){
 
     return (
         <>
-            <Navbar />
             <div className="min-h-screen bg-gray-50">
                 {/* Compact Header */}
                 <div className="bg-white border-b border-gray-200">

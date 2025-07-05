@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Navbar from "@/Components/Navbar/page";
 import { usePosts } from "@/Components/StoreContext/postContext";
 import { FaCalendarAlt, FaClock, FaArrowLeft, FaShare, FaTag, FaUser } from "react-icons/fa";
 import { BiBook } from "react-icons/bi";
@@ -161,7 +160,6 @@ export default function BlogPost() {
     if (isLoading) {
         return (
             <>
-                <Navbar />
                 <div className="min-h-screen flex justify-center items-center bg-gray-50">
                     <div className="text-center">
                         <div className="relative w-16 h-16 mx-auto mb-4">
@@ -181,7 +179,6 @@ export default function BlogPost() {
     if (!isFound || !blog) {
         return (
             <>
-                <Navbar />
                 <div className="min-h-screen flex items-center justify-center bg-gray-50">
                     <div className="text-center p-8">
                         <div className="w-20 h-20 bg-red-100 rounded-full flex justify-center items-center mx-auto mb-6">
@@ -211,7 +208,6 @@ export default function BlogPost() {
 
     return (
         <>
-            <Navbar />
             <div className="min-h-screen bg-gray-50">
                 {/* Hero Section */}
                 <div className="relative">

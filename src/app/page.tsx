@@ -10,9 +10,6 @@ import AchievementsSection from "@/Components/Achievements/Achievements";
 const page = ()=>{
     return(
         <div className="w-full flex flex-col gap-5">
-            <div>
-                <Navbar />
-            </div>
             <AnimatedLine />
             <div>
                 <HeroText />

@@ -9,7 +9,6 @@ export default function EditorPage() {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <Navbar />
             <div className="flex flex-row gap-4 p-4 justify-center items-center">
                 <button
                     onClick={() => setEdit(false)}
