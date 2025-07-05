@@ -11,6 +11,7 @@ type TimelineItem = {
     course: string;
     context: string;
     logo:string;
+    link: string;
 };
 
 gsap.registerPlugin(ScrollTrigger);
@@ -106,7 +107,7 @@ const TimelineStudy = () => {
                             <p className="text-gray-600">{item.context}</p>
                             {/* You might want to make the "Learn More" a proper link */}
                             {/* <Link href="/some-details-page"> */}
-                            <a className="mt-4 inline-block text-blue-500 hover:underline" href="#">
+                            <a className="mt-4 inline-block text-blue-500 hover:underline" href={item.link}>
                                 Learn More
                             </a>
                             {/* </Link> */}
