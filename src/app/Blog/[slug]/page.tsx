@@ -5,6 +5,7 @@ import { usePosts } from "@/Components/StoreContext/postContext";
 import { FaCalendarAlt, FaClock, FaArrowLeft, FaShare, FaTag, FaUser } from "react-icons/fa";
 import { BiBook } from "react-icons/bi";
 import Link from "next/link";
+import Head from "next/head";
 
 // Define proper TypeScript interfaces matching your actual data structure
 interface BlogPost {
@@ -51,6 +52,44 @@ export default function BlogPost() {
     const [isFound, setIsFound] = useState<boolean>(true);
     const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
 
+    // Function to create short slug from title
+    const createShortSlug = (title: string): string => {
+        return title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
+            .replace(/-+/g, '-') // Replace multiple hyphens with single
+            .trim()
+            .substring(0, 50) // Limit to 50 characters
+            .replace(/-$/, ''); // Remove trailing hyphen
+    };
+
+    // Function to find blog by both original slug and short slug
+    const findBlogBySlug = (posts: Post[], searchSlug: string): Post | undefined => {
+        // First try exact match with original slug
+        let foundBlog = posts.find((post: Post) =>
+            post.type === "blog" && post.slug === searchSlug
+        );
+
+        // If not found, try matching with generated short slug
+        if (!foundBlog) {
+            foundBlog = posts.find((post: Post) =>
+                post.type === "blog" && createShortSlug(post.title) === searchSlug
+            );
+        }
+
+        // If still not found, try case-insensitive match
+        if (!foundBlog) {
+            foundBlog = posts.find((post: Post) =>
+                post.type === "blog" &&
+                (post.slug?.toLowerCase() === searchSlug.toLowerCase() ||
+                    createShortSlug(post.title).toLowerCase() === searchSlug.toLowerCase())
+            );
+        }
+
+        return foundBlog;
+    };
+
     // Ensure slug is a string and decode URL encoding
     const rawSlug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
     const slug = rawSlug ? decodeURIComponent(rawSlug) : '';
@@ -64,26 +103,7 @@ export default function BlogPost() {
             console.log('All blog posts:', posts.filter((post: Post) => post.type === "blog"));
             console.log('Looking for slug:', slug);
 
-            // Try exact match first
-            let foundBlog = posts.find((post: Post) =>
-                post.type === "blog" && post.slug === slug
-            );
-
-            // If not found, try with trimmed spaces
-            if (!foundBlog) {
-                foundBlog = posts.find((post: Post) =>
-                    post.type === "blog" && post.slug?.trim() === slug.trim()
-                );
-            }
-
-            // If still not found, try case-insensitive match
-            if (!foundBlog) {
-                foundBlog = posts.find((post: Post) =>
-                    post.type === "blog" &&
-                    post.slug?.toLowerCase() === slug.toLowerCase()
-                );
-            }
-
+            const foundBlog = findBlogBySlug(posts, slug);
             console.log('Found blog:', foundBlog);
 
             if (foundBlog) {
@@ -104,7 +124,7 @@ export default function BlogPost() {
                 console.log('Blog not found for slug:', slug);
                 console.log('Available blog slugs:', posts
                     .filter((post: Post) => post.type === "blog")
-                    .map((post: Post) => post.slug)
+                    .map((post: Post) => ({ original: post.slug, short: createShortSlug(post.title) }))
                 );
             }
         }
@@ -135,12 +155,16 @@ export default function BlogPost() {
     const handleShare = async (): Promise<void> => {
         if (!blog) return;
 
+        // Create short, clean URL for sharing
+        const shortSlug = createShortSlug(blog.title);
+        const shareUrl = `${window.location.origin}/blog/${shortSlug}`;
+
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: blog.title,
                     text: blog.excerpt || blog.title,
-                    url: window.location.href,
+                    url: shareUrl,
                 });
             } catch (error) {
                 console.log("Error sharing:", error);
@@ -148,12 +172,39 @@ export default function BlogPost() {
         } else {
             // Fallback: copy to clipboard
             try {
-                await navigator.clipboard.writeText(window.location.href);
+                await navigator.clipboard.writeText(shareUrl);
                 alert("Link copied to clipboard!");
             } catch (error) {
                 console.error("Failed to copy to clipboard:", error);
             }
         }
+    };
+
+    // Generate structured data for SEO
+    const generateStructuredData = () => {
+        if (!blog) return null;
+
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": blog.title,
+            "description": blog.excerpt || blog.title,
+            "image": blog.bannerImage || "",
+            "author": {
+                "@type": "Person",
+                "name": blog.author || "Admin"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "Your Site Name" // Replace with your site name
+            },
+            "datePublished": blog.publishedAt || blog.createdAt,
+            "dateModified": blog.updatedAt || blog.createdAt,
+            "articleSection": blog.tags?.join(", ") || "",
+            "keywords": blog.tags?.join(", ") || ""
+        };
+
+        return structuredData;
     };
 
     // Loading state
@@ -179,6 +230,11 @@ export default function BlogPost() {
     if (!isFound || !blog) {
         return (
             <>
+                <Head>
+                    <title>Article Not Found</title>
+                    <meta name="description" content="The article you're looking for doesn't exist." />
+                    <meta name="robots" content="noindex, nofollow" />
+                </Head>
                 <div className="min-h-screen flex items-center justify-center bg-gray-50">
                     <div className="text-center p-8">
                         <div className="w-20 h-20 bg-red-100 rounded-full flex justify-center items-center mx-auto mb-6">
@@ -208,6 +264,47 @@ export default function BlogPost() {
 
     return (
         <>
+            <Head>
+                <title>{blog.title}</title>
+                <meta name="description" content={blog.excerpt || blog.title} />
+                <meta name="author" content={blog.author || "Admin"} />
+                <meta name="keywords" content={blog.tags?.join(", ") || ""} />
+
+                {/* Open Graph Meta Tags for Social Sharing */}
+                <meta property="og:title" content={blog.title} />
+                <meta property="og:description" content={blog.excerpt || blog.title} />
+                <meta property="og:image" content={blog.bannerImage || ""} />
+                <meta property="og:url" content={`${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${createShortSlug(blog.title)}`} />
+                <meta property="og:type" content="article" />
+                <meta property="og:site_name" content="Your Site Name" />
+
+                {/* Twitter Card Meta Tags */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={blog.title} />
+                <meta name="twitter:description" content={blog.excerpt || blog.title} />
+                <meta name="twitter:image" content={blog.bannerImage || ""} />
+
+                {/* Article Meta Tags */}
+                <meta property="article:author" content={blog.author || "Admin"} />
+                <meta property="article:published_time" content={blog.publishedAt || blog.createdAt} />
+                <meta property="article:modified_time" content={blog.updatedAt || blog.createdAt} />
+                <meta property="article:section" content={blog.tags?.join(", ") || ""} />
+                {blog.tags?.map((tag, index) => (
+                    <meta key={index} property="article:tag" content={tag} />
+                ))}
+
+                {/* Canonical URL */}
+                <link rel="canonical" href={`${typeof window !== 'undefined' ? window.location.origin : ''}/Blog/${createShortSlug(blog.title)}`} />
+
+                {/* Structured Data */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(generateStructuredData())
+                    }}
+                />
+            </Head>
+
             <div className="min-h-screen bg-gray-50">
                 {/* Hero Section */}
                 <div className="relative">
@@ -325,7 +422,7 @@ export default function BlogPost() {
                             <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {relatedPosts.map((post: Post) => (
-                                    <Link key={post._id} href={`/blog/${post.slug}`}>
+                                    <Link key={post._id} href={`/blog/${createShortSlug(post.title)}`}>
                                         <div className="group cursor-pointer">
                                             {post.bannerImage && (
                                                 <div

@@ -18,6 +18,18 @@ export default function Blog(){
 
     const allTags = [...new Set(uniqueBlogs.flatMap((p) => p.tags || []))];
 
+    // Function to create short slug from title (same as in your blog post component)
+    const createShortSlug = (title: string): string => {
+        return title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
+            .replace(/-+/g, '-') // Replace multiple hyphens with single
+            .trim()
+            .substring(0, 50) // Limit to 50 characters
+            .replace(/-$/, ''); // Remove trailing hyphen
+    };
+
     const filteredBlogs = uniqueBlogs.filter((blog) => {
         const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (blog.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -314,7 +326,7 @@ export default function Blog(){
 
                                             {/* Title */}
                                             <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                                <Link href={`/blog/${blog.slug}`}>
+                                                <Link href={`/blog/${createShortSlug(blog.title)}`}>
                                                     {blog.title}
                                                 </Link>
                                             </h2>
@@ -343,7 +355,7 @@ export default function Blog(){
                                                     )}
                                                 </div>
 
-                                                <Link href={`/Blog/${blog.slug}`}>
+                                                <Link href={`/Blog/${createShortSlug(blog.title)}`}>
                                                     <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors group">
                                                         Read more
                                                         <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
