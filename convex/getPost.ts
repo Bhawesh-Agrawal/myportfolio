@@ -35,3 +35,20 @@ export const getPostById = query({
         return post;
     },
 });
+
+
+export const getAllPosts = query({
+    handler: async (ctx) => {
+        return await ctx.db.query("blog").collect();
+    },
+});
+
+export const getBySlug = query({
+    args: { slug: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("blog")
+            .filter((q) => q.eq(q.field("slug"), args.slug))
+            .first();
+    },
+});
