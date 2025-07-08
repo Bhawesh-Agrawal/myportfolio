@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 export default defineSchema({
     blog: defineTable({
@@ -12,13 +12,27 @@ export default defineSchema({
         updatedAt: v.string(),
         published: v.boolean(),
         tags: v.array(v.string()),
-        projectLinks: v.optional(v.object({
-            website: v.optional(v.string()),
-            github: v.optional(v.string()),
-            references: v.optional(v.array(v.object({
-                label: v.string(),
-                url: v.string(),
-            })))
-        }))
-    })
-})
+        projectLinks: v.optional(
+            v.object({
+                website: v.optional(v.string()),
+                github: v.optional(v.string()),
+                references: v.optional(
+                    v.array(
+                        v.object({
+                            label: v.string(),
+                            url: v.string(),
+                        })
+                    )
+                ),
+            })
+        ),
+    }),
+
+    messages: defineTable({
+        name: v.string(),
+        email: v.string(),
+        subject: v.string(),
+        message: v.string(),
+        createdAt: v.number(),
+    }),
+});

@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaCalendarAlt, FaClock, FaArrowLeft, FaShare, FaTag, FaUser } from "react-icons/fa";
-import { BiBook } from "react-icons/bi";
-import Link from "next/link";
+
 
 interface Post {
     _id: string;
@@ -64,13 +63,13 @@ export default function BlogPostClient({ initialPost }: BlogPostClientProps) {
 
     const handleShare = async (): Promise<void> => {
         const shortSlug = createShortSlug(blog.title);
-        const shareUrl = `${window.location.origin}/blog/${shortSlug}`;
+        const shareUrl = `${window.location.origin}/Blog/${shortSlug}`;
 
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: blog.title,
-                    text: blog.excerpt || blog.title,
+                    text: blog.slug || blog.title,
                     url: shareUrl,
                 });
             } catch (error) {
@@ -126,7 +125,7 @@ export default function BlogPostClient({ initialPost }: BlogPostClientProps) {
     <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 mb-4">
     <div className="flex items-center gap-2">
     <FaUser className="w-4 h-4" />
-        <span>{blog.author || "Admin"}</span>
+        <span>{"Admin"}</span>
         </div>
         <div className="flex items-center gap-2">
     <FaCalendarAlt className="w-4 h-4" />

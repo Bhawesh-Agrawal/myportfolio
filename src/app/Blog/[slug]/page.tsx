@@ -19,11 +19,11 @@ function createShortSlug(title: string): string {
         .replace(/-$/, '');
 }
 
-// Function to find blog by slug (similar to your client logic)
+
 async function getBlogPost(slug: string) {
     try {
-        // First, get all posts from Convex
-        const posts = await convex.query(api.getPost.getAllPosts); // Adjust query name as needed
+
+        const posts = await convex.query(api.getPost.getAllPosts);
 
         if (!posts || posts.length === 0) {
             return null;
@@ -98,9 +98,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://bhaweshagrawal.com.np';
     const shortSlug = createShortSlug(post.title);
-    const canonicalUrl = `${baseUrl}/blog/${shortSlug}`;
+    const canonicalUrl = `${baseUrl}/Blog/${shortSlug}`;
 
     return {
         title: post.title,
@@ -178,10 +178,10 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         },
         "publisher": {
             "@type": "Organization",
-            "name": "Your Site Name", // Replace with your actual site name
+            "name": "codeXbhawesh",
             "logo": {
                 "@type": "ImageObject",
-                "url": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png` // Replace with your logo URL
+                "url": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`
             }
         },
         "datePublished": post.createdAt,
