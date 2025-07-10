@@ -6,6 +6,7 @@ import Framework from "@/Components/Framework/page";
 import AnimatedLine from "@/Components/Workflow/Workflow";
 import LandingProjectsSlider from "@/Components/ProjectCard/pageProject";
 import AchievementsSection from "@/Components/Achievements/Achievements";
+import Blogcomponent from "@/Components/Blog/page";
 
 const page = ()=>{
     return(
@@ -28,6 +29,9 @@ const page = ()=>{
             </div>
             <div>
                 <AchievementsSection />
+            </div>
+            <div>
+                <Blogcomponent />
             </div>
         </div>
     )
