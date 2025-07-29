@@ -19,6 +19,17 @@ const formatDate = (dateString: string) =>
         day: "numeric",
     });
 
+const createShortSlug = (title: string): string => {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+        .substring(0, 50)
+        .replace(/-$/, '');
+};
+
 export default function BlogComponent() {
     const cardsRef = useRef<HTMLDivElement[]>([]);
     const [animationComplete, setAnimationComplete] = useState(false);
@@ -27,41 +38,30 @@ export default function BlogComponent() {
     const { posts, isLoading } = usePosts();
     const topProjects = posts.filter((p) => p.type === "blog").slice(0, 4);
 
-    // Clear and reset refs when posts change
     useEffect(() => {
         cardsRef.current = [];
         setAnimationComplete(false);
     }, [topProjects.length]);
 
-    // GSAP animation with proper cleanup
     useEffect(() => {
         if (topProjects.length === 0 || isLoading) return;
 
-        // Wait for next frame to ensure DOM is ready
         const animateCards = () => {
-            // Kill any existing timeline
-            if (timelineRef.current) {
-                timelineRef.current.kill();
-            }
+            if (timelineRef.current) timelineRef.current.kill();
 
-            // Filter out null refs
             const validCards = cardsRef.current.filter(Boolean);
-
             if (validCards.length === 0) return;
 
-            // Create new timeline
             timelineRef.current = gsap.timeline({
                 onComplete: () => setAnimationComplete(true)
             });
 
-            // Set initial state immediately (no flicker)
             gsap.set(validCards, {
                 opacity: 0,
                 y: 30,
                 scale: 0.95
             });
 
-            // Animate in
             timelineRef.current.to(validCards, {
                 opacity: 1,
                 y: 0,
@@ -72,14 +72,11 @@ export default function BlogComponent() {
             });
         };
 
-        // Use requestAnimationFrame for smooth timing
         const rafId = requestAnimationFrame(animateCards);
 
         return () => {
             cancelAnimationFrame(rafId);
-            if (timelineRef.current) {
-                timelineRef.current.kill();
-            }
+            if (timelineRef.current) timelineRef.current.kill();
         };
     }, [topProjects.length, isLoading]);
 
@@ -111,120 +108,127 @@ export default function BlogComponent() {
 
                 {/* Blog Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {topProjects.map((post, idx) => (
-                        <div
-                            key={post._id}
-                            ref={(el) => {
-                                if (el) cardsRef.current[idx] = el;
-                            }}
-                            onClick={() => handleReadMore(post.slug)}
-                            className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col cursor-pointer transform-gpu"
-                            style={{
-                                // Disable CSS transitions that might conflict with GSAP
-                                transition: animationComplete ? 'box-shadow 0.3s ease, border-color 0.3s ease' : 'none'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (animationComplete) {
-                                    gsap.to(e.currentTarget, {
-                                        y: -4,
-                                        scale: 1.02,
-                                        duration: 0.3,
-                                        ease: "power2.out"
-                                    });
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (animationComplete) {
-                                    gsap.to(e.currentTarget, {
-                                        y: 0,
-                                        scale: 1,
-                                        duration: 0.3,
-                                        ease: "power2.out"
-                                    });
-                                }
-                            }}
-                        >
-                            {/* Image */}
-                            <div className="relative overflow-hidden h-[220px] bg-gray-200">
-                                <img
-                                    src={post.bannerImage ? post.bannerImage : "/blog banner.png"}
-                                    alt={post.title}
-                                    className="w-full h-full object-cover"
-                                    style={{
-                                        transition: animationComplete ? 'transform 0.5s ease' : 'none'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (animationComplete) {
-                                            gsap.to(e.currentTarget, {
-                                                scale: 1.05,
-                                                duration: 0.5,
-                                                ease: "power2.out"
-                                            });
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (animationComplete) {
-                                            gsap.to(e.currentTarget, {
-                                                scale: 1,
-                                                duration: 0.5,
-                                                ease: "power2.out"
-                                            });
-                                        }
-                                    }}
-                                />
-                            </div>
-
-                            {/* Text Content */}
-                            <div className="p-4 flex flex-col flex-grow">
-                                {/* Meta Info */}
-                                <div className="flex items-center gap-3 mb-1 text-xs text-gray-500">
-                                    <span className="flex items-center gap-[2px]">
-                                        <Calendar className="w-3 h-3" />
-                                        {formatDate(post.createdAt)}
-                                    </span>
-                                    <span className="flex items-center gap-[2px]">
-                                        <Clock className="w-3 h-3" />
-                                        {calculateReadTime(post.content)}
-                                    </span>
+                    {topProjects.map((post, idx) => {
+                        const shortSlug = createShortSlug(post.title);
+                        return (
+                            <div
+                                key={post._id}
+                                ref={(el) => {
+                                    if (el) cardsRef.current[idx] = el;
+                                }}
+                                onClick={() => handleReadMore(shortSlug)}
+                                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 flex flex-col cursor-pointer transform-gpu"
+                                style={{
+                                    transition: animationComplete
+                                        ? 'box-shadow 0.3s ease, border-color 0.3s ease'
+                                        : 'none'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (animationComplete) {
+                                        gsap.to(e.currentTarget, {
+                                            y: -4,
+                                            scale: 1.02,
+                                            duration: 0.3,
+                                            ease: "power2.out"
+                                        });
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (animationComplete) {
+                                        gsap.to(e.currentTarget, {
+                                            y: 0,
+                                            scale: 1,
+                                            duration: 0.3,
+                                            ease: "power2.out"
+                                        });
+                                    }
+                                }}
+                            >
+                                {/* Image */}
+                                <div className="relative overflow-hidden h-[220px] bg-gray-200">
+                                    <img
+                                        src={post.bannerImage || "/blog banner.png"}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover"
+                                        style={{
+                                            transition: animationComplete
+                                                ? 'transform 0.5s ease'
+                                                : 'none'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (animationComplete) {
+                                                gsap.to(e.currentTarget, {
+                                                    scale: 1.05,
+                                                    duration: 0.5,
+                                                    ease: "power2.out"
+                                                });
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (animationComplete) {
+                                                gsap.to(e.currentTarget, {
+                                                    scale: 1,
+                                                    duration: 0.5,
+                                                    ease: "power2.out"
+                                                });
+                                            }
+                                        }}
+                                    />
                                 </div>
 
-                                {/* Title */}
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1 leading-snug h-12 overflow-hidden"
-                                    style={{
-                                        transition: animationComplete ? 'color 0.2s ease' : 'none'
-                                    }}>
-                                    {post.title}
-                                </h3>
-
-                                {/* Slug as short description */}
-                                <p className="text-base text-gray-600 mb-2 line-clamp-2">
-                                    {post.slug.replace(/-/g, " ")}
-                                </p>
-
-                                {/* Tags */}
-                                <div className="flex flex-wrap gap-[6px] mb-1 mt-2">
-                                    {post.tags.slice(0, 2).map((tag, i) => (
-                                        <span
-                                            key={i}
-                                            className="inline-flex items-center gap-[3px] px-2 py-[3px] bg-gray-100 text-gray-700 text-md font-medium rounded-full leading-none h-6"
-                                        >
-                                            <Tag className="w-3 h-3" />
-                                            {tag}
+                                {/* Text Content */}
+                                <div className="p-4 flex flex-col flex-grow">
+                                    <div className="flex items-center gap-3 mb-1 text-xs text-gray-500">
+                                        <span className="flex items-center gap-[2px]">
+                                            <Calendar className="w-3 h-3" />
+                                            {formatDate(post.createdAt)}
                                         </span>
-                                    ))}
-                                </div>
+                                        <span className="flex items-center gap-[2px]">
+                                            <Clock className="w-3 h-3" />
+                                            {calculateReadTime(post.content)}
+                                        </span>
+                                    </div>
 
-                                {/* Read More */}
-                                <div className="flex items-center gap-2 text-blue-600 font-medium text-md mt-3">
-                                    <span>Read more</span>
-                                    <ArrowRight className="w-3 h-3 transform-gpu"
-                                                style={{
-                                                    transition: animationComplete ? 'transform 0.2s ease' : 'none'
-                                                }} />
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-1 leading-snug line-clamp-2"
+                                        style={{
+                                            transition: animationComplete
+                                                ? 'color 0.2s ease'
+                                                : 'none'
+                                        }}>
+                                        {post.title}
+                                    </h3>
+
+                                    <p className="text-base text-gray-600 mb-2 line-clamp-2">
+                                        {post.slug}
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-[6px] mb-1 mt-2">
+                                        {post.tags.slice(0, 2).map((tag, i) => (
+                                            <span
+                                                key={i}
+                                                className="inline-flex items-center gap-[3px] px-2 py-[3px] bg-gray-100 text-gray-700 text-md font-medium rounded-full leading-none h-6"
+                                            >
+                                                <Tag className="w-3 h-3" />
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex items-center gap-2 text-blue-600 font-medium text-md mt-3">
+                                        <span>Read more</span>
+                                        <ArrowRight
+                                            className="w-3 h-3 transform-gpu"
+                                            style={{
+                                                transition: animationComplete
+                                                    ? 'transform 0.2s ease'
+                                                    : 'none'
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* View All Posts Button */}

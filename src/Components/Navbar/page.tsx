@@ -30,9 +30,6 @@ const Navbar = () => {
             <Link href="/Blog" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
               Blog
             </Link>
-            <Link href="/Tweets" scroll={false} className="hover:text-amber-600 transition-colors duration-200">
-              Tweets
-            </Link>
             <Link href="/Contact" className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors duration-200">
               Contact Me
             </Link>

@@ -326,7 +326,7 @@ export default function Blog(){
 
                                             {/* Title */}
                                             <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                                <Link href={`/blog/${createShortSlug(blog.title)}`}>
+                                                <Link href={`/Blog/${createShortSlug(blog.title)}`}>
                                                     {blog.title}
                                                 </Link>
                                             </h2>

@@ -1,15 +1,55 @@
-@import "tailwindcss";
+@import "tailwindcss"; /* <--- ENSURE THIS IS THE ONLY TAILWIND IMPORT */
 
 html,
 body {
   overflow-x: hidden;
   background: #ffffff;
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--foreground); /* Ensure this var is defined elsewhere if not default Tailwind */
+  font-family: 'Inter', sans-serif; /* Set Inter as the default for UI and general text */
+  line-height: 1.6; /* Good default for general UI text */
 }
 
+/* These heading styles will apply globally.
+   The more specific .blog-content-area.prose hX rules in BlogPostClient.tsx
+   will override these for the blog content itself. */
+h1 {
+  font-size: 2.5em; /* Define for h1 here if not elsewhere */
+  font-weight: 700; /* Bold */
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+  font-family: 'Inter', sans-serif; /* Ensure global headings use Inter */
+}
+
+h2 {
+  font-size: 2em; /* Adjust as needed - larger for H2 */
+  font-weight: 700; /* Bold */
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-family: 'Inter', sans-serif;
+}
+
+h3 {
+  font-size: 1.5em; /* Adjust as needed - smaller than H2 */
+  font-weight: 600; /* Semi-bold */
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  font-family: 'Inter', sans-serif;
+}
+
+h4 {
+  font-size: 1.2em; /* Adjust as needed - smallest of the three */
+  font-weight: 600; /* Semi-bold for clarity */
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+  font-family: 'Inter', sans-serif;
+}
+
+
+/* Tailwind Prose plugin base styles */
+/* The .prose class itself will be styled by Tailwind's typography plugin. */
+/* You might want to remove redundant overrides if Tailwind's prose already handles them. */
 .prose {
-  max-width: none;
+  max-width: none; /* Keep this if you want full width for prose content */
 }
 
 .prose .embed-iframe {
@@ -20,45 +60,31 @@ body {
 }
 
 .prose blockquote {
-  border-left: 4px solid #ddd;
+  border-left: 4px solid #6096B4; /* Changed to match your theme color */
   padding-left: 1rem;
-  color: #555;
-  margin: 1rem 0;
+  color: #4b5563; /* text-gray-700 equivalent */
+  margin: 2em 0; /* More vertical space */
+  font-style: italic; /* Common blog style */
+  line-height: 1.75; /* Good readability */
 }
 
 .prose pre {
-  background: #f4f4f4;
-  padding: 1rem;
-  border-radius: 8px;
+  background: #f3f4f6; /* bg-gray-100 equivalent */
+  padding: 1em;
+  border-radius: 0.375rem; /* 8px equivalent */
   overflow-x: auto;
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 .prose mark {
   padding: 2px 4px;
   border-radius: 4px;
+  background-color: #ffeb3b; /* A typical highlight color */
+  color: #333; /* Ensure text is visible */
 }
 
-h2 {
-  font-size: 2em; /* Adjust as needed - larger for H2 */
-  font-weight: bold;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-}
-
-h3 {
-  font-size: 1.5em; /* Adjust as needed - smaller than H2 */
-  font-weight: semi-bold;
-  margin-top: 1.2em;
-  margin-bottom: 0.4em;
-}
-
-h4 {
-  font-size: 1.2em; /* Adjust as needed - smallest of the three */
-  font-weight: normal;
-  margin-top: 1em;
-  margin-bottom: 0.3em;
-}
-
+/* Animation keyframes (keep as is) */
 @keyframes marquee-horizontal {
   0% {
     transform: translateX(0%);
@@ -99,5 +125,3 @@ h4 {
 .animate-fade-in {
   animation: fade-in 0.5s ease-in-out forwards;
 }
-
-
