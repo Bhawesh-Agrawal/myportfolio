@@ -18,6 +18,9 @@ function createShortSlug(title: string): string {
     .replace(/-$/, '');
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://bhaweshagrawal.com.np';
+
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 1. Fetch blog posts from Convex
   const posts = await convex.query(api.getPost.getAllPosts);
@@ -53,8 +56,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...projectUrls,
   ];
 
-  return allRoutes.map(route => ({
-    url: route.url,
+  
+    return allRoutes.map(route => ({
+    url: baseUrl + route.url,
     lastModified: route.lastModified,
-  }));
+    }));
+
 }
