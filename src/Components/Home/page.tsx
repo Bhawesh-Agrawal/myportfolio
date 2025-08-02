@@ -6,10 +6,21 @@ const BoxAnimate = () => {
   const groupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const node = groupRef.current;
-      if (!node) return;
+    const node = groupRef.current;
+    if (!node) return;
 
+    // Check screen size
+    const isDesktop = window.innerWidth >= 1024; // Tailwind "lg"
+
+    if (!isDesktop) {
+      // No animation for mobile/tablet: directly set visible state
+      node.style.transform = "translateX(0)";
+      node.style.opacity = "1";
+      return;
+    }
+
+    // Add slight delay before observing
+    const timeout = setTimeout(() => {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
@@ -23,13 +34,12 @@ const BoxAnimate = () => {
       observer.observe(node);
 
       return () => observer.disconnect();
-    }, 100); // Slight delay to reduce layout jank
+    }, 100);
 
     return () => clearTimeout(timeout);
   }, []);
 
   return (
-    // Use padding instead of margin to prevent overflow issues
     <div className="w-full min-h-[80vh] flex justify-center items-center relative p-4">
       <div
         ref={groupRef}
@@ -52,7 +62,6 @@ const BoxAnimate = () => {
 
         {/* Rectangle */}
         <div className="w-full bg-[#EEE9DA] rounded-2xl shadow-lg p-8 md:pl-32 lg:p-12 lg:pl-18 flex flex-col justify-center min-h-[400px]">
-          {/* --- FIX: Added new job titles --- */}
           <h1 className="text-2xl md:text-3xl lg:text-5xl font-light text-[#111827] mb-4 leading-tight">
             Hey! I'm <span className="font-semibold text-[#1f2937]">BHAWESH</span> - A
             <span className="font-semibold text-[#1f2937]"> Software Developer</span>,
@@ -67,7 +76,6 @@ const BoxAnimate = () => {
             for continuous improvement.
           </p>
 
-          {/* --- FIX: Reduced gap and added flex-wrap to prevent overflow --- */}
           <div className="flex flex-row flex-wrap mt-8 md:mt-10 gap-x-12 gap-y-4 items-center justify-start">
             {/* Column 1 */}
             <div className="flex flex-col gap-4">
